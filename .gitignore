@@ -1,0 +1,164 @@
+# =============================================================================
+# .gitignore — Diabetes Readmission Risk ML Project
+# =============================================================================
+# Healthcare data note:
+#   Raw dataset files are NOT committed to version control.
+#   See README.md > Reproducibility for dataset acquisition instructions.
+# =============================================================================
+
+# ---------------------------------------------------------------------------
+# Python
+# ---------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+var/
+sdist/
+develop-eggs/
+lib/
+lib64/
+wheels/
+share/python-wheels/
+MANIFEST
+
+# ---------------------------------------------------------------------------
+# Virtual Environments
+# ---------------------------------------------------------------------------
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.conda/
+conda-env/
+
+# ---------------------------------------------------------------------------
+# Jupyter Notebooks
+# ---------------------------------------------------------------------------
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+
+# ---------------------------------------------------------------------------
+# Data Files
+# ---------------------------------------------------------------------------
+# Raw dataset — obtain as described in README.md
+# Note: directory-level ignores prevent .gitkeep negation in Git,
+# so we ignore by file extension instead and commit .gitkeep placeholders.
+
+# Common data formats that may contain patient-level information
+*.csv
+*.tsv
+*.xlsx
+*.xls
+*.parquet
+*.feather
+*.pkl
+*.pickle
+*.joblib
+
+# HDF5 / binary data formats
+*.h5
+*.hdf5
+
+# Processed output files
+data/processed/*
+!data/processed/.gitkeep
+data/raw/*
+!data/raw/.gitkeep
+
+# ---------------------------------------------------------------------------
+# Credentials and Secrets — NEVER COMMIT
+# ---------------------------------------------------------------------------
+.env
+.env.*
+*.pem
+*.key
+secrets/
+credentials/
+config/secrets.yaml
+config/secrets.json
+*_credentials.*
+*_secret.*
+api_key*
+
+# ---------------------------------------------------------------------------
+# IDE and Editor Files
+# ---------------------------------------------------------------------------
+.idea/
+.vscode/
+*.swp
+*.swo
+*.swn
+*~
+.project
+.pydevproject
+*.sublime-project
+*.sublime-workspace
+
+# ---------------------------------------------------------------------------
+# Operating System Files
+# ---------------------------------------------------------------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# ---------------------------------------------------------------------------
+# Testing and Coverage
+# ---------------------------------------------------------------------------
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+nosetests.xml
+test-results/
+
+# ---------------------------------------------------------------------------
+# Documentation Build Artifacts
+# ---------------------------------------------------------------------------
+docs/_build/
+site/
+
+# ---------------------------------------------------------------------------
+# MLflow / Experiment Tracking Artifacts
+# ---------------------------------------------------------------------------
+mlruns/
+mlartifacts/
+
+# ---------------------------------------------------------------------------
+# Model Artifacts (large binary files)
+# ---------------------------------------------------------------------------
+models/saved/
+
+# ---------------------------------------------------------------------------
+# Temporary and Log Files
+# ---------------------------------------------------------------------------
+*.log
+*.tmp
+*.temp
+logs/
+tmp/
+
+# ---------------------------------------------------------------------------
+# Distribution / Packaging
+# ---------------------------------------------------------------------------
+*.pyc
+*.whl
