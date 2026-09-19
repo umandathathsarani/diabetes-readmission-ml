@@ -104,8 +104,20 @@ diabetes-readmission-ml/
 ├── reports/                 
 │   ├── figures/             # Exported charts (ROC curves, feature importance)
 │   └── *_log.md             # Detailed logs explaining every data and modeling decision
+├── src/                     # Source code for modular, production-ready scripts
+│   ├── data/                # Scripts to fetch or generate data
+│   ├── evaluation/          # Scripts to evaluate models
+│   ├── features/            # Scripts to turn raw data into features
+│   ├── models/              # Scripts to train models
+│   └── preprocessing/       # Scripts to clean data
 └── README.md                # Project documentation
 ```
+
+### Why this structure?
+This project follows professional **Software Engineering for Machine Learning** best practices (inspired by Cookiecutter Data Science). 
+- **Notebooks (`notebooks/`)** are used strictly for exploration, visualization, and drafting the pipeline.
+- **Source Code (`src/`)** exists to allow transitioning the pipeline from experimental notebooks into modular, reusable Python scripts. In a real-world scenario, the `src/` modules would be imported into production systems rather than running raw Jupyter notebooks.
+- **Documentation (`reports/`)** ensures that every subjective decision (e.g., dropping a column, treating missing values) is recorded and justified, ensuring reproducibility and clinical validity.
 
 ---
 *Created by Umanda Thathsarani for IT3091 Machine Learning.*
