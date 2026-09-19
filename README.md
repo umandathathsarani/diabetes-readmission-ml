@@ -61,29 +61,45 @@ Conversely, patients discharged directly to their homes, or admitted for schedul
 
 ---
 
-## 💻 How to Run (Reproducibility)
+## 💻 How to Run & Reproduce
 
-To run this project locally and reproduce the findings:
+This project is designed with a dual-structure: **Jupyter Notebooks** for step-by-step exploration, and modular **Python scripts** in the `src/` directory for programmatic use.
 
-1. **Clone the repository:**
+### Prerequisites
+Ensure you have Python 3.9+ installed. Clone the repository and install the dependencies (pandas, numpy, scikit-learn, matplotlib, seaborn, jupyter):
+```bash
+git clone https://github.com/umandathathsarani/diabetes-readmission-ml.git
+cd diabetes-readmission-ml
+pip install pandas numpy scikit-learn matplotlib seaborn jupyter joblib
+```
+
+### Option A: Interactive Exploration (Jupyter Notebooks)
+This is the recommended way to view the thought process, charts, and data decisions.
+1. Download the dataset from the [UCI Repository](https://archive.ics.uci.edu/dataset/296/diabetes-130-us-hospitals-for-years-1999-2008).
+2. Place `diabetic_data.csv` and `IDS_mapping.csv` inside the `data/raw/` directory.
+3. Start the Jupyter server:
    ```bash
-   git clone https://github.com/umandathathsarani/diabetes-readmission-ml.git
-   cd diabetes-readmission-ml
+   jupyter notebook
    ```
+4. Open and run the notebooks in the `notebooks/` directory in sequential order (01 through 05).
 
-2. **Set up the environment:**
-   Ensure you have Python 3.9+ installed. Install the required packages (pandas, numpy, scikit-learn, matplotlib, seaborn, jupyter):
-   ```bash
-   pip install -r requirements.txt
-   ```
-   *(Note: If `requirements.txt` is not present, manually install the libraries listed above).*
+### Option B: Programmatic Usage (The `src/` Modules)
+If you want to integrate this pipeline into another application, use the modular scripts provided in the `src/` folder. This mimics a professional production environment.
+```python
+from src.data.load_data import load_raw_data
+from src.preprocessing.clean_data import basic_cleaning
+from src.features.build_features import make_features
 
-3. **Download the Data:**
-   - Download the dataset from the [UCI Repository](https://archive.ics.uci.edu/dataset/296/diabetes-130-us-hospitals-for-years-1999-2008).
-   - Place the `diabetic_data.csv` and `IDS_mapping.csv` files inside the `data/raw/` directory.
+# 1. Load data
+df = load_raw_data()
 
-4. **Run the Notebooks:**
-   Open Jupyter and run the notebooks in sequential order (01 through 05).
+# 2. Clean data
+df, patient_ids = basic_cleaning(df)
+
+# 3. Engineer features
+df_features = make_features(df)
+```
+*(Note: Ensure your working directory is set to the project root when importing from `src`.)*
 
 ---
 
