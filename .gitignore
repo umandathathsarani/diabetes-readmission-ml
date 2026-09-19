@@ -1,14 +1,8 @@
-# =============================================================================
-# .gitignore — Diabetes Readmission Risk ML Project
-# =============================================================================
-# Healthcare data note:
-#   Raw dataset files are NOT committed to version control.
-#   See README.md > Reproducibility for dataset acquisition instructions.
-# =============================================================================
+# .gitignore - Diabetes Readmission Risk ML Project
 
-# ---------------------------------------------------------------------------
+# Healthcare data note: Raw dataset files are NOT committed to version control.See README.md > Reproducibility for dataset acquisition instructions.
+
 # Python
-# ---------------------------------------------------------------------------
 __pycache__/
 *.py[cod]
 *$py.class
@@ -30,9 +24,7 @@ wheels/
 share/python-wheels/
 MANIFEST
 
-# ---------------------------------------------------------------------------
 # Virtual Environments
-# ---------------------------------------------------------------------------
 .venv/
 venv/
 env/
@@ -42,18 +34,13 @@ venv.bak/
 .conda/
 conda-env/
 
-# ---------------------------------------------------------------------------
 # Jupyter Notebooks
-# ---------------------------------------------------------------------------
 .ipynb_checkpoints/
 */.ipynb_checkpoints/*
 
-# ---------------------------------------------------------------------------
 # Data Files
-# ---------------------------------------------------------------------------
 # Raw dataset — obtain as described in README.md
-# Note: directory-level ignores prevent .gitkeep negation in Git,
-# so we ignore by file extension instead and commit .gitkeep placeholders.
+# Note: directory-level ignores prevent .gitkeep negation in Git, so we ignore by file extension instead and commit .gitkeep placeholders.
 
 # Common data formats that may contain patient-level information
 *.csv
@@ -76,9 +63,7 @@ data/processed/*
 data/raw/*
 !data/raw/.gitkeep
 
-# ---------------------------------------------------------------------------
 # Credentials and Secrets — NEVER COMMIT
-# ---------------------------------------------------------------------------
 .env
 .env.*
 *.pem
@@ -91,9 +76,7 @@ config/secrets.json
 *_secret.*
 api_key*
 
-# ---------------------------------------------------------------------------
 # IDE and Editor Files
-# ---------------------------------------------------------------------------
 .idea/
 .vscode/
 *.swp
@@ -105,9 +88,7 @@ api_key*
 *.sublime-project
 *.sublime-workspace
 
-# ---------------------------------------------------------------------------
 # Operating System Files
-# ---------------------------------------------------------------------------
 .DS_Store
 .DS_Store?
 ._*
@@ -118,9 +99,7 @@ Thumbs.db
 desktop.ini
 $RECYCLE.BIN/
 
-# ---------------------------------------------------------------------------
 # Testing and Coverage
-# ---------------------------------------------------------------------------
 .pytest_cache/
 .coverage
 htmlcov/
@@ -131,34 +110,24 @@ coverage.xml
 nosetests.xml
 test-results/
 
-# ---------------------------------------------------------------------------
 # Documentation Build Artifacts
-# ---------------------------------------------------------------------------
 docs/_build/
 site/
 
-# ---------------------------------------------------------------------------
 # MLflow / Experiment Tracking Artifacts
-# ---------------------------------------------------------------------------
 mlruns/
 mlartifacts/
 
-# ---------------------------------------------------------------------------
 # Model Artifacts (large binary files)
-# ---------------------------------------------------------------------------
 models/saved/
 
-# ---------------------------------------------------------------------------
 # Temporary and Log Files
-# ---------------------------------------------------------------------------
 *.log
 *.tmp
 *.temp
 logs/
 tmp/
 
-# ---------------------------------------------------------------------------
 # Distribution / Packaging
-# ---------------------------------------------------------------------------
 *.pyc
 *.whl

@@ -72,61 +72,88 @@ Readmission risk is a population-level signal. Individual predictions carry unce
 ## DEC-002 — Unit of Analysis
 
 ### Decision
-> TODO: Confirm after dataset inspection in Notebook 01.
+The unit of analysis is the **patient encounter (hospital admission)**.
 
-Preliminary: The unit of analysis is expected to be the **patient encounter** (hospital visit), not the unique patient. Multiple encounters from the same patient may exist. This affects how data splitting must be handled.
+Each row in `diabetic_data.csv` represents one encounter, identified by a unique `encounter_id`. One patient (`patient_nbr`) can appear multiple times.
 
 ### Options Considered
-- Encounter level
-- Patient level
+- Encounter level (each row = one hospital visit)
+- Patient level (one row per patient)
 
 ### Selected Option
-> TODO: Confirm after dataset inspection.
+**Encounter level** — confirmed from dataset inspection.
 
 ### Reason
-> TODO: Document after confirmation.
+The dataset is structured at the encounter level (`encounter_id` is unique per row). The business question is about predicting readmission following a specific hospital discharge — this is inherently encounter-level. Collapsing to patient level would lose encounter-specific information.
 
 ### Evidence
-> TODO: Verify patient_nbr appears multiple times.
+From `notebooks/01_data_understanding.ipynb`:
+- Total rows: **101,766**
+- Unique `encounter_id` values: **101,766** (one-to-one — no duplicates)
+- Unique `patient_nbr` values: **71,518**
+- Patients with 2+ encounters: **16,773** (23.5% of patients)
 
 ### Trade-offs
-Encounter-level prediction is more directly useful for planning individual encounters. However, if patients appear in both training and test sets, the model may benefit from patient-level information leakage.
+**Benefit:** Encounter-level retains all data and is directly relevant to discharge-time decision support.  
+**Risk:** 16,773 patients appear in multiple rows. A naive random train/test split may place encounters from the same patient in both sets — this creates information leakage between train and test. A **patient-aware split** (grouped by `patient_nbr`) is required.
 
 ### Date
-2026-09-19 (preliminary — to be confirmed)
+2026-09-19 (confirmed after Notebook 01)
 
 ---
 
 ## DEC-003 — Target Variable Definition
 
 ### Decision
-> TODO: Define after dataset inspection.
-
-The `readmitted` column has three categories: `<30`, `>30`, and `NO`.
-
-A potential binary formulation is:
-- **Positive class:** Readmitted within 30 days (`<30`)
-- **Negative class:** Not readmitted within 30 days (`>30` or `NO` combined)
+The target will be formulated as a **binary classification** problem:
+- **Positive class (1):** Patient readmitted within 30 days (`<30`)
+- **Negative class (0):** All other outcomes — readmitted after 30 days (`>30`) or not readmitted (`NO`)
 
 ### Options Considered
-- Multiclass classification (original 3 classes)
-- Binary: `<30` vs. `>30` + `NO`
-- Binary: `<30` + `>30` (any readmission) vs. `NO`
+1. **Multiclass (3-class):** Predict `NO`, `>30`, or `<30` directly
+2. **Binary — early readmission:** `<30` (positive) vs `>30` + `NO` (negative)
+3. **Binary — any readmission:** `<30` + `>30` (positive) vs `NO` (negative)
 
 ### Selected Option
-> TODO: Confirm and justify after EDA (class distribution analysis).
+Option 2: **`<30` vs rest**
 
 ### Reason
-> TODO: Document based on class distribution and project objective.
+The hospital's primary concern is early readmission (within 30 days), as this:
+- Represents the highest clinical and operational cost
+- Is the standard clinical readmission quality metric
+- Is the explicit target of the original Strack et al. (2014) study
+- Is the most actionable — patients flagged before discharge could receive targeted follow-up
+
+`>30` readmissions are clinically distinct; combining them with `NO` into the negative class is more defensible than merging `>30` with `<30`.
 
 ### Evidence
-> TODO: Class counts from dataset inspection.
+From `notebooks/01_data_understanding.ipynb`:
+
+| Category | Count | % |
+|----------|-------|---|
+| NO | 54,864 | 53.9% |
+| >30 | 35,545 | 34.9% |
+| <30 | 11,357 | 11.2% |
+
+Under the binary formulation:
+- Positive (`<30`): **11,357** (11.2%)
+- Negative (`>30` + `NO`): **90,409** (88.8%)
+
+Class imbalance ratio ≈ 1:8 — significant, must be addressed in modelling.
 
 ### Trade-offs
-Binary formulation simplifies evaluation and is more aligned with hospital planning. However, it collapses information about the timing of readmissions beyond 30 days. This limitation must be stated.
+**Advantage:** Clinically focused; aligns with standard 30-day readmission metric; simpler evaluation.  
+**Limitation:** The formulation discards the distinction between `>30` and `NO`; a patient readmitted on day 31 and a patient never readmitted are treated identically in the negative class. This limitation is documented and stated in `reports/final_findings.md`.
+
+### Original → Binary Transformation
+| Original Value | Binary Label | Rationale |
+|---------------|-------------|----------|
+| `<30` | 1 (positive) | Early readmission — primary target |
+| `>30` | 0 (negative) | Not early readmission |
+| `NO` | 0 (negative) | Not early readmission |
 
 ### Date
-2026-09-19 (preliminary)
+2026-09-19 (confirmed after Notebook 01)
 
 ---
 
