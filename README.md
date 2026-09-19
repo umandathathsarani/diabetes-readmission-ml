@@ -61,45 +61,34 @@ Conversely, patients discharged directly to their homes, or admitted for schedul
 
 ---
 
-## 💻 How to Run & Reproduce
+## 💻 Setup & Execution Instructions
 
-This project is designed with a dual-structure: **Jupyter Notebooks** for step-by-step exploration, and modular **Python scripts** in the `src/` directory for programmatic use.
+**Note on Execution Flow: This project is entirely notebook-driven. While a `src/` directory is included to demonstrate an understanding of production software architecture, the actual data pipeline and models are executed exclusively via the Jupyter Notebooks.**
 
-### Prerequisites
-Ensure you have Python 3.9+ installed. Clone the repository and install the dependencies (pandas, numpy, scikit-learn, matplotlib, seaborn, jupyter):
-```bash
-git clone https://github.com/umandathathsarani/diabetes-readmission-ml.git
-cd diabetes-readmission-ml
-pip install pandas numpy scikit-learn matplotlib seaborn jupyter joblib
-```
+To run this project locally and reproduce the findings:
 
-### Option A: Interactive Exploration (Jupyter Notebooks)
-This is the recommended way to view the thought process, charts, and data decisions.
-1. Download the dataset from the [UCI Repository](https://archive.ics.uci.edu/dataset/296/diabetes-130-us-hospitals-for-years-1999-2008).
-2. Place `diabetic_data.csv` and `IDS_mapping.csv` inside the `data/raw/` directory.
-3. Start the Jupyter server:
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/umandathathsarani/diabetes-readmission-ml.git
+   cd diabetes-readmission-ml
+   ```
+
+2. **Set up the environment:**
+   Ensure you have Python 3.9+ installed. Install the required dependencies:
+   ```bash
+   pip install pandas numpy scikit-learn matplotlib seaborn jupyter joblib
+   ```
+
+3. **Download the Data:**
+   - Download the dataset from the [UCI Repository](https://archive.ics.uci.edu/dataset/296/diabetes-130-us-hospitals-for-years-1999-2008).
+   - Place the `diabetic_data.csv` and `IDS_mapping.csv` files inside the `data/raw/` directory.
+
+4. **Run the Notebooks:**
+   Start the Jupyter server:
    ```bash
    jupyter notebook
    ```
-4. Open and run the notebooks in the `notebooks/` directory in sequential order (01 through 05).
-
-### Option B: Programmatic Usage (The `src/` Modules)
-If you want to integrate this pipeline into another application, use the modular scripts provided in the `src/` folder. This mimics a professional production environment.
-```python
-from src.data.load_data import load_raw_data
-from src.preprocessing.clean_data import basic_cleaning
-from src.features.build_features import make_features
-
-# 1. Load data
-df = load_raw_data()
-
-# 2. Clean data
-df, patient_ids = basic_cleaning(df)
-
-# 3. Engineer features
-df_features = make_features(df)
-```
-*(Note: Ensure your working directory is set to the project root when importing from `src`.)*
+   Open and run the notebooks in the `notebooks/` directory in sequential order (01 through 05).
 
 ---
 
@@ -129,11 +118,20 @@ diabetes-readmission-ml/
 └── README.md                # Project documentation
 ```
 
-### Why this structure?
-This project follows professional **Software Engineering for Machine Learning** best practices (inspired by Cookiecutter Data Science). 
-- **Notebooks (`notebooks/`)** are used strictly for exploration, visualization, and drafting the pipeline.
-- **Source Code (`src/`)** exists to allow transitioning the pipeline from experimental notebooks into modular, reusable Python scripts. In a real-world scenario, the `src/` modules would be imported into production systems rather than running raw Jupyter notebooks.
-- **Documentation (`reports/`)** ensures that every subjective decision (e.g., dropping a column, treating missing values) is recorded and justified, ensuring reproducibility and clinical validity.
+### Future Deployment Plan (The `src/` Directory)
+This project follows professional **Software Engineering for Machine Learning** best practices. While the project is currently evaluated via Jupyter Notebooks, the foundation for a production deployment has been laid in the `src/` directory.
+
+In a real-world scenario, raw Jupyter notebooks are not run in production. Instead, the notebook logic is refactored into modular, reusable Python scripts (which I have started in `src/`). This allows the model to be deployed via an API or run as a scheduled cron job using code like:
+
+```python
+from src.data.load_data import load_raw_data
+from src.preprocessing.clean_data import basic_cleaning
+from src.features.build_features import make_features
+
+df = load_raw_data()
+df, patient_ids = basic_cleaning(df)
+df_features = make_features(df)
+```
 
 ---
 *Created by Umanda Thathsarani for IT3091 Machine Learning.*
