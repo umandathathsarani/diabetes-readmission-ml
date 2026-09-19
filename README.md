@@ -26,48 +26,85 @@ The goal of this project is to build a predictive model that identifies diabetic
 
 ## 🚀 Workflow & Notebooks
 
-The project is structured into five sequential Jupyter Notebooks, documenting the entire machine learning pipeline from raw data to model interpretation.
+The project is structured into five sequential Jupyter Notebooks, documenting the entire machine learning pipeline from raw data to model interpretation. All decisions are documented extensively in the `reports/` directory.
 
-| Phase | Notebook | What it does |
+| Phase | Notebook | Description & Key Steps |
 |-------|----------|--------------|
-| **1. Data Understanding** | [`01_data_understanding.ipynb`](notebooks/01_data_understanding.ipynb) | Investigates the dataset structure, confirms the unit of analysis (encounters vs patients), and maps missing values. |
-| **2. Exploratory Data Analysis** | [`02_eda.ipynb`](notebooks/02_eda.ipynb) | Visualizes relationships between clinical variables and readmission rates. Discovers that prior hospital visits are strong predictors. |
-| **3. Preprocessing** | [`03_preprocessing_feature_engineering.ipynb`](notebooks/03_preprocessing_feature_engineering.ipynb) | Cleans data, engineers new features (`total_prior_visits`), and builds a leak-free `sklearn` pipeline with a patient-aware `GroupShuffleSplit`. |
-| **4. Model Training** | [`04_model_training.ipynb`](notebooks/04_model_training.ipynb) | Addresses the severe 1:8 class imbalance using `class_weight='balanced'`. Trains Baseline, Logistic Regression, and Random Forest models. |
-| **5. Interpretability** | [`05_model_interpretability.ipynb`](notebooks/05_model_interpretability.ipynb) | Extracts coefficients from the Logistic Regression model to explain exactly *why* certain patients are flagged as high risk (white-box approach). |
+| **1. Data Understanding** | [`01_data_understanding.ipynb`](notebooks/01_data_understanding.ipynb) | Investigates the dataset structure, confirms the unit of analysis (encounters vs patients), maps missing values, and establishes the binary target (`<30` vs `>30/NO`). |
+| **2. Exploratory Data Analysis** | [`02_eda.ipynb`](notebooks/02_eda.ipynb) | Visualizes relationships between clinical variables and readmission rates. Discovers that prior hospital visits are strong predictors, and identifies variables with near-zero variance. |
+| **3. Preprocessing** | [`03_preprocessing_feature_engineering.ipynb`](notebooks/03_preprocessing_feature_engineering.ipynb) | Cleans data, engineers new features (`total_prior_visits`, `n_diabetes_meds`), groups high-cardinality ICD-9 codes, and builds a leak-free `sklearn` ColumnTransformer pipeline with a patient-aware `GroupShuffleSplit`. |
+| **4. Model Training** | [`04_model_training.ipynb`](notebooks/04_model_training.ipynb) | Addresses the severe 1:8 class imbalance using `class_weight='balanced'`. Trains Baseline (Dummy), Logistic Regression, and Random Forest models, evaluated on Recall and ROC-AUC. |
+| **5. Interpretability** | [`05_model_interpretability.ipynb`](notebooks/05_model_interpretability.ipynb) | Extracts coefficients from the Logistic Regression model to explain exactly *why* certain patients are flagged as high risk (white-box clinical approach). |
 
 ---
 
 ## 📊 Key Findings & Results
 
-Because only ~11% of encounters result in a 30-day readmission, accuracy was a misleading metric (a dummy model guessing "no readmission" achieves 88.8% accuracy but catches zero actual cases). 
+### The Class Imbalance Problem
+Only ~11% of hospital encounters result in a 30-day readmission. Accuracy is a highly misleading metric here—a dummy model guessing "no readmission" achieves 88.8% accuracy but catches zero actual cases. 
 
-Instead, the models were optimized and evaluated on **Recall** (catching the actual readmissions) and **ROC-AUC**:
+Instead, the models were optimized and evaluated on **Recall** (the percentage of actual readmissions successfully caught by the model) and **ROC-AUC**:
 
-- **Dummy (Baseline):** 0% Recall | 0.500 ROC-AUC
-- **Logistic Regression:** 54% Recall | 0.650 ROC-AUC
-- **Random Forest:** 57% Recall | 0.658 ROC-AUC
+| Model | Accuracy | Recall | ROC-AUC | Notes |
+|-------|----------|--------|---------|-------|
+| **Dummy (Baseline)** | 88.8% | 0.0% | 0.500 | Guesses negative every time. |
+| **Logistic Regression** | 65.6% | **54.0%** | **0.650** | Strong recall, highly interpretable. |
+| **Random Forest** | 64.5% | **57.5%** | **0.658** | Best recall, but harder to explain. |
 
-**Interpretability:**
-The model aligns closely with clinical reality. The strongest factors increasing a patient's risk of readmission are:
-1. High number of prior inpatient visits.
-2. Discharge to a rehabilitation or nursing facility (indicating incomplete recovery).
-3. High number of active diabetes medications (indicating clinical complexity).
+### Model Interpretability (Clinical Insights)
+The Logistic Regression model was chosen as the final model due to its transparency. The strongest factors increasing a patient's risk of readmission aligned perfectly with clinical reality:
+1. **High prior utilization:** A high number of previous inpatient visits (`number_inpatient`) or total prior visits (`total_prior_visits`).
+2. **Incomplete recovery:** Discharge to a rehabilitation facility or skilled nursing facility (SNF).
+3. **Clinical complexity:** A high number of active diabetes medications or emergency room visits.
+
+Conversely, patients discharged directly to their homes, or admitted for scheduled general surgeries, had significantly lower risks of returning.
+
+---
+
+## 💻 How to Run (Reproducibility)
+
+To run this project locally and reproduce the findings:
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/umandathathsarani/diabetes-readmission-ml.git
+   cd diabetes-readmission-ml
+   ```
+
+2. **Set up the environment:**
+   Ensure you have Python 3.9+ installed. Install the required packages (pandas, numpy, scikit-learn, matplotlib, seaborn, jupyter):
+   ```bash
+   pip install -r requirements.txt
+   ```
+   *(Note: If `requirements.txt` is not present, manually install the libraries listed above).*
+
+3. **Download the Data:**
+   - Download the dataset from the [UCI Repository](https://archive.ics.uci.edu/dataset/296/diabetes-130-us-hospitals-for-years-1999-2008).
+   - Place the `diabetic_data.csv` and `IDS_mapping.csv` files inside the `data/raw/` directory.
+
+4. **Run the Notebooks:**
+   Open Jupyter and run the notebooks in sequential order (01 through 05).
 
 ---
 
 ## 📁 Repository Structure
 
 ```text
+diabetes-readmission-ml/
 ├── data/
-│   ├── raw/                 # Original dataset (diabetic_data.csv)
-│   └── processed/           # Processed Numpy arrays (ignored in git)
-├── models/                  # Saved .pkl models (Logistic Regression)
-├── notebooks/               # 01 through 05 (.ipynb files)
+│   ├── raw/                 # Original dataset (must be downloaded manually)
+│   └── processed/           # Processed Numpy arrays (ignored in git to save space)
+├── models/                  # Saved .pkl models (e.g., Logistic Regression)
+├── notebooks/               
+│   ├── 01_data_understanding.ipynb
+│   ├── 02_eda.ipynb
+│   ├── 03_preprocessing_feature_engineering.ipynb
+│   ├── 04_model_training.ipynb
+│   └── 05_model_interpretability.ipynb
 ├── reports/                 
-│   ├── figures/             # Exported charts and ROC curves
-│   └── *_log.md             # Decision logs explaining every data choice
-└── README.md                # You are here!
+│   ├── figures/             # Exported charts (ROC curves, feature importance)
+│   └── *_log.md             # Detailed logs explaining every data and modeling decision
+└── README.md                # Project documentation
 ```
 
 ---
